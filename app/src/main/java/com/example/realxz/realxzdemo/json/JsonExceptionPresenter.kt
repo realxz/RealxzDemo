@@ -2,9 +2,8 @@ package com.example.realxz.realxzdemo.json
 
 import com.example.realxz.realxzdemo.base.BasePresenter
 import com.example.realxz.realxzdemo.network.ApiContainer
-import com.example.realxz.realxzdemo.network.ApiResponse
 import com.example.realxz.realxzdemo.network.rx.ApiObserver
-import com.example.realxz.realxzdemo.network.rx.retryIo2MainTransformer
+import com.example.realxz.realxzdemo.network.rx.observableTransformer
 import com.example.realxz.realxzdemo.pojo.FakeTask
 
 /**
@@ -17,8 +16,7 @@ class JsonExceptionPresenter : BasePresenter<JsonExceptionView>() {
         getView()?.showLoadingDialog()
         ApiContainer.instance.apiService
                 .mockJsonErrorRequest("test")
-                .flowable
-                .compose(retryIo2MainTransformer())
+                .compose(observableTransformer())
                 .doOnComplete { getView()?.dismissLoadingDialog() }
                 .doOnError { getView()?.dismissLoadingDialog() }
                 .`as`(getView()!!.bindAutoDisposable())
@@ -26,9 +24,9 @@ class JsonExceptionPresenter : BasePresenter<JsonExceptionView>() {
                     override fun onRealXzSuccess(response: FakeTask) {
                     }
 
-                    override fun onRealXzFail(errorResponse: ApiResponse<*>) {
-                        super.onRealXzFail(errorResponse)
-                        getView()?.printErrorMsg(errorResponse.errorMsg ?: "")
+                    override fun onRealXzError(errorMsg: String, exception: String) {
+                        super.onRealXzError(errorMsg, exception)
+                        getView()?.printErrorMsg(exception)
                     }
                 })
 

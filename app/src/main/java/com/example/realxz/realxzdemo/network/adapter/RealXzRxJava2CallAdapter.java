@@ -1,8 +1,10 @@
-package com.example.realxz.realxzdemo.network.rx;
+package com.example.realxz.realxzdemo.network.adapter;
 
 
 import com.example.realxz.realxzdemo.network.ApiResponse;
-import com.example.realxz.realxzdemo.network.RealxzFlowable;
+import com.example.realxz.realxzdemo.network.rx.RealXzBodyFlowable;
+import com.example.realxz.realxzdemo.network.rx.RealXzBodyObservable;
+import com.example.realxz.realxzdemo.network.rx.RealXzCallExecuteObservable;
 
 import java.lang.reflect.Type;
 
@@ -19,9 +21,11 @@ import retrofit2.Response;
 
 public class RealXzRxJava2CallAdapter<R> implements CallAdapter<ApiResponse<R>, Object> {
     private final Type responseType;
+    private final boolean isFlowable;
 
-    RealXzRxJava2CallAdapter(Type responseType) {
+    RealXzRxJava2CallAdapter(Type responseType, boolean isFlowable) {
         this.responseType = responseType;
+        this.isFlowable = isFlowable;
     }
 
     @Override
@@ -32,8 +36,11 @@ public class RealXzRxJava2CallAdapter<R> implements CallAdapter<ApiResponse<R>, 
     @Override
     public Object adapt(Call<ApiResponse<R>> call) {
         Observable<Response<ApiResponse<R>>> responseObservable = new RealXzCallExecuteObservable<>(call);
-        RealXzBodyObservable<R> bodyObservable = new RealXzBodyObservable<>(responseObservable);
-        return new RealxzFlowable<>(bodyObservable.toFlowable(BackpressureStrategy.LATEST));
+        if (isFlowable) {
+            return new RealXzBodyFlowable<>(responseObservable.toFlowable(BackpressureStrategy.LATEST));
+        } else {
+            return new RealXzBodyObservable<>(responseObservable);
+        }
     }
 }
 

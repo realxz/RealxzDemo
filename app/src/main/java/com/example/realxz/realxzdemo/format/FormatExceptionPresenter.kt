@@ -2,9 +2,8 @@ package com.example.realxz.realxzdemo.format
 
 import com.example.realxz.realxzdemo.base.BasePresenter
 import com.example.realxz.realxzdemo.network.ApiContainer
-import com.example.realxz.realxzdemo.network.ApiResponse
 import com.example.realxz.realxzdemo.network.rx.ApiObserver
-import com.example.realxz.realxzdemo.network.rx.retryIo2MainTransformer
+import com.example.realxz.realxzdemo.network.rx.observableTransformer
 import com.example.realxz.realxzdemo.pojo.FakeTask
 
 /**
@@ -16,8 +15,7 @@ class FormatExceptionPresenter : BasePresenter<FormatExceptionView>() {
         getView()?.showLoadingDialog()
         ApiContainer.instance.apiService
                 .mockFormatErrorRequest("test")
-                .flowable
-                .compose(retryIo2MainTransformer())
+                .compose(observableTransformer())
                 .doOnComplete { getView()?.dismissLoadingDialog() }
                 .doOnError { getView()?.dismissLoadingDialog() }
                 .`as`(getView()!!.bindAutoDisposable())
@@ -25,9 +23,9 @@ class FormatExceptionPresenter : BasePresenter<FormatExceptionView>() {
                     override fun onRealXzSuccess(response: List<FakeTask>) {
                     }
 
-                    override fun onRealXzFail(errorResponse: ApiResponse<*>) {
-                        super.onRealXzFail(errorResponse)
-                        getView()?.printErrorMsg(errorResponse.errorMsg ?: "")
+                    override fun onRealXzError(errorMsg: String, exception: String) {
+                        super.onRealXzError(errorMsg, exception)
+                        getView()?.printErrorMsg(exception)
                     }
                 })
 

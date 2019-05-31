@@ -2,8 +2,8 @@ package com.example.realxz.realxzdemo.client
 
 import com.example.realxz.realxzdemo.base.BasePresenter
 import com.example.realxz.realxzdemo.network.ApiContainer
-import com.example.realxz.realxzdemo.network.rx.ApiObserver
-import com.example.realxz.realxzdemo.network.rx.retryIo2MainTransformer
+import com.example.realxz.realxzdemo.network.rx.ApiSubscriber
+import com.example.realxz.realxzdemo.network.rx.flowableTransformer
 
 /**
  * @author real xz
@@ -14,12 +14,11 @@ class ClientRequestPresenter : BasePresenter<ClientRequestView>() {
         getView()?.showLoadingDialog()
         ApiContainer.instance.apiService
                 .mockClientErrorRequest()
-                .flowable
-                .compose(retryIo2MainTransformer())
+                .compose(flowableTransformer())
                 .doOnComplete { getView()?.dismissLoadingDialog() }
                 .doOnError { getView()?.dismissLoadingDialog() }
                 .`as`(getView()!!.bindAutoDisposable())
-                .subscribe(object : ApiObserver<String>() {
+                .subscribe(object : ApiSubscriber<String>() {
                     override fun onRealXzSuccess(response: String) {
 
                     }

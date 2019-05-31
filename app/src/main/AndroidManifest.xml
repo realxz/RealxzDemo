@@ -28,7 +28,6 @@
         <activity android:name=".format.FormatExceptionActivity" />
         <activity android:name=".biz.BusinessFailActivity" />
         <activity android:name=".retry.RetryCaseActivity" />
-        <activity android:name=".timer.TimerCaseActivity"></activity>
     </application>
 
 </manifest>

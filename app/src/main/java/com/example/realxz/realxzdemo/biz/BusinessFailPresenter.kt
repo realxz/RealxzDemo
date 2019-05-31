@@ -4,7 +4,7 @@ import com.example.realxz.realxzdemo.base.BasePresenter
 import com.example.realxz.realxzdemo.network.ApiContainer
 import com.example.realxz.realxzdemo.network.ApiResponse
 import com.example.realxz.realxzdemo.network.rx.ApiObserver
-import com.example.realxz.realxzdemo.network.rx.retryIo2MainTransformer
+import com.example.realxz.realxzdemo.network.rx.observableTransformer
 
 /**
  * @author real xz
@@ -15,8 +15,7 @@ class BusinessFailPresenter : BasePresenter<BusinessFailView>() {
         getView()?.showLoadingDialog()
         ApiContainer.instance.apiService
                 .mockBusinessErrorRequest()
-                .flowable
-                .compose(retryIo2MainTransformer())
+                .compose(observableTransformer())
                 .doOnComplete { getView()?.dismissLoadingDialog() }
                 .doOnError { getView()?.dismissLoadingDialog() }
                 .`as`(getView()!!.bindAutoDisposable())

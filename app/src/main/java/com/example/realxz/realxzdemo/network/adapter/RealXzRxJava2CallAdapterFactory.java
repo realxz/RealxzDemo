@@ -1,6 +1,7 @@
-package com.example.realxz.realxzdemo.network.rx;
+package com.example.realxz.realxzdemo.network.adapter;
 
-import com.example.realxz.realxzdemo.network.RealxzFlowable;
+import com.example.realxz.realxzdemo.network.rx.RealXzBodyFlowable;
+import com.example.realxz.realxzdemo.network.rx.RealXzBodyObservable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
@@ -28,9 +29,11 @@ public class RealXzRxJava2CallAdapterFactory extends CallAdapter.Factory {
     @Override
     public CallAdapter<?, ?> get(Type returnType, Annotation[] annotations, Retrofit retrofit) {
         Class<?> rawType = getRawType(returnType);
-        if (rawType != RealxzFlowable.class) {
+        if (rawType != RealXzBodyObservable.class && rawType != RealXzBodyFlowable.class) {
             return null;
         }
+        boolean isFlowable = rawType == RealXzBodyFlowable.class;
+
         // Flowable<String> --> String
         Type responseType;
         if (!(returnType instanceof ParameterizedType)) {
@@ -46,7 +49,7 @@ public class RealXzRxJava2CallAdapterFactory extends CallAdapter.Factory {
         //一般走到这里 responseType 就是我们声明的业务类型
         responseType = observableType;
 
-        return new RealXzRxJava2CallAdapter<>(responseType);
+        return new RealXzRxJava2CallAdapter<>(responseType, isFlowable);
 
     }
 }

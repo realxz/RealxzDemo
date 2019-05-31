@@ -14,10 +14,10 @@ import retrofit2.Response;
  * @date 2018/9/7
  */
 
-final class RealXzCallExecuteObservable<T> extends Observable<Response<T>> {
+public final class RealXzCallExecuteObservable<T> extends Observable<Response<T>> {
     private final Call<T> originalCall;
 
-    RealXzCallExecuteObservable(Call<T> originalCall) {
+    public RealXzCallExecuteObservable(Call<T> originalCall) {
         this.originalCall = originalCall;
     }
 

@@ -2,8 +2,8 @@ package com.example.realxz.realxzdemo.net
 
 import com.example.realxz.realxzdemo.base.BasePresenter
 import com.example.realxz.realxzdemo.network.ApiContainer
-import com.example.realxz.realxzdemo.network.rx.ApiObserver
-import com.example.realxz.realxzdemo.network.rx.retryIo2MainTransformer
+import com.example.realxz.realxzdemo.network.rx.ApiSubscriber
+import com.example.realxz.realxzdemo.network.rx.flowableTransformer
 import com.example.realxz.realxzdemo.pojo.Task
 
 /**
@@ -15,12 +15,11 @@ class NetworkErrorPresenter : BasePresenter<NetworkErrorView>() {
         getView()?.showLoadingDialog()
         ApiContainer.instance.apiService
                 .loadRapTasks("test")
-                .flowable
-                .compose(retryIo2MainTransformer())
+                .compose(flowableTransformer())
                 .doOnComplete { getView()?.dismissLoadingDialog() }
                 .doOnError { getView()?.dismissLoadingDialog() }
                 .`as`(getView()!!.bindAutoDisposable())
-                .subscribe(object : ApiObserver<List<Task>>() {
+                .subscribe(object : ApiSubscriber<List<Task>>() {
                     override fun onRealXzSuccess(response: List<Task>) {
                         response?.let {
                             getView()?.showTasks(it)

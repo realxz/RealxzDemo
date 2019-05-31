@@ -1,5 +1,7 @@
 package com.example.realxz.realxzdemo.network
 
+import com.example.realxz.realxzdemo.network.rx.RealXzBodyFlowable
+import com.example.realxz.realxzdemo.network.rx.RealXzBodyObservable
 import com.example.realxz.realxzdemo.pojo.FakeTask
 import com.example.realxz.realxzdemo.pojo.Task
 import retrofit2.http.GET
@@ -14,24 +16,20 @@ import retrofit2.http.Query
  */
 interface ApiService {
     @GET("177028/realxz/list")
-    fun loadRapTasks(@Query("name") name: String?): RealxzFlowable<List<Task>>
+    fun loadRapTasks(@Query("name") name: String?): RealXzBodyFlowable<List<Task>>
 
     @GET("177028/")
-    fun mockClientErrorRequest(): RealxzFlowable<String>
+    fun mockClientErrorRequest(): RealXzBodyFlowable<String>
 
     @GET("177028/realxz/list")
-    fun mockServerErrorRequest(): RealxzFlowable<String>
+    fun mockServerErrorRequest(): RealXzBodyFlowable<String>
 
     @GET("177028/realxz/biz_error")
-    fun mockBusinessErrorRequest(): RealxzFlowable<String>
+    fun mockBusinessErrorRequest(): RealXzBodyObservable<String>
 
     @GET("177028/realxz/list")
-    fun mockFormatErrorRequest(@Query("name") name: String?): RealxzFlowable<List<FakeTask>>
+    fun mockFormatErrorRequest(@Query("name") name: String?): RealXzBodyObservable<List<FakeTask>>
 
     @GET("177028/realxz/list")
-    fun mockJsonErrorRequest(@Query("name") name: String?): RealxzFlowable<FakeTask>
-
-    @GET("177028/realxz/list")
-    fun mockRetryCaseRequest(@Query("name") name: String?): RealxzFlowable<List<FakeTask>>
-
+    fun mockJsonErrorRequest(@Query("name") name: String?): RealXzBodyObservable<FakeTask>
 }

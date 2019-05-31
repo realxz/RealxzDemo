@@ -12,7 +12,6 @@ import com.example.realxz.realxzdemo.net.NetworkErrorActivity
 import com.example.realxz.realxzdemo.retry.RetryCaseActivity
 import com.example.realxz.realxzdemo.server.ServerRequestErrorActivity
 import com.example.realxz.realxzdemo.task.RequestSuccessActivity
-import com.example.realxz.realxzdemo.timer.TimerCaseActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity(), MainView {
@@ -69,12 +68,5 @@ class MainActivity : BaseActivity(), MainView {
             val intent = Intent(this, RetryCaseActivity::class.java)
             startActivity(intent)
         }
-
-        //Timer 操作符
-        realxz_xxx.setOnClickListener {
-            val intent = Intent(this, TimerCaseActivity::class.java)
-            startActivity(intent)
-        }
-
     }
 }

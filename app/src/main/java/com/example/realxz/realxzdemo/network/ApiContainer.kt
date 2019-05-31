@@ -1,7 +1,7 @@
 package com.example.realxz.realxzdemo.network
 
-import com.example.realxz.realxzdemo.network.rx.FastJsonConverterFactory
-import com.example.realxz.realxzdemo.network.rx.RealXzRxJava2CallAdapterFactory
+import com.example.realxz.realxzdemo.network.adapter.RealXzRxJava2CallAdapterFactory
+import com.example.realxz.realxzdemo.network.converter.FastJsonConverterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
  * @date 2019/5/15
  */
 class ApiContainer private constructor() {
-    lateinit var apiService: ApiService
+    var apiService: ApiService
 
     companion object {
         val instance = SingletonHolder.holder

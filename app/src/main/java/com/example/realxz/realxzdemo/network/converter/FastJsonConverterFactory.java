@@ -1,4 +1,4 @@
-package com.example.realxz.realxzdemo.network.rx;
+package com.example.realxz.realxzdemo.network.converter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;

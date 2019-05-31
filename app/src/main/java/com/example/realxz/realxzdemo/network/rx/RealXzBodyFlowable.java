@@ -3,9 +3,10 @@ package com.example.realxz.realxzdemo.network.rx;
 import com.example.realxz.realxzdemo.network.ApiResponse;
 import com.example.realxz.realxzdemo.network.exception.ServerException;
 
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import io.reactivex.Flowable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -14,32 +15,31 @@ import retrofit2.Response;
 
 /**
  * @author real xz
- * @date 2018/9/7
+ * @date 2019-05-30
  */
+public class RealXzBodyFlowable<T> extends Flowable<T> {
+    private final Flowable<Response<ApiResponse<T>>> upstream;
 
-public class RealXzBodyObservable<T> extends Observable<T> {
-    private final Observable<Response<ApiResponse<T>>> upstream;
-
-    public RealXzBodyObservable(Observable<Response<ApiResponse<T>>> upstream) {
+    public RealXzBodyFlowable(Flowable<Response<ApiResponse<T>>> upstream) {
         this.upstream = upstream;
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> observer) {
-        upstream.subscribe(new BodyObserver<>(observer));
+    protected void subscribeActual(Subscriber<? super T> subscriber) {
+        upstream.subscribe(new BodySubscriber<>(subscriber));
     }
 
-    private static class BodyObserver<R> implements Observer<Response<ApiResponse<R>>> {
-        private final Observer<? super R> observer;
+    private static class BodySubscriber<R> implements Subscriber<Response<ApiResponse<R>>> {
+        private final Subscriber<? super R> subscriber;
         private boolean terminated;
 
-        BodyObserver(Observer<? super R> observer) {
-            this.observer = observer;
+        public BodySubscriber(Subscriber<? super R> subscriber) {
+            this.subscriber = subscriber;
         }
 
         @Override
-        public void onSubscribe(Disposable disposable) {
-            observer.onSubscribe(disposable);
+        public void onSubscribe(Subscription s) {
+            subscriber.onSubscribe(s);
         }
 
         @Override
@@ -48,14 +48,14 @@ public class RealXzBodyObservable<T> extends Observable<T> {
                 ApiResponse<R> apiResponse = response.body();
                 if (apiResponse.isOK()) {
                     //业务 OK
-                    observer.onNext(apiResponse.getContent());
+                    subscriber.onNext(apiResponse.getContent());
                 } else {
                     String apiErrorCode = apiResponse.getErrorCode();
                     String apiErrorMessage = apiResponse.getErrorMsg();
                     //业务失败
                     Throwable t = new ServerException(apiErrorCode, apiErrorMessage, apiResponse);
                     try {
-                        observer.onError(t);
+                        subscriber.onError(t);
                     } catch (Throwable inner) {
                         Exceptions.throwIfFatal(inner);
                         RxJavaPlugins.onError(new CompositeException(t, inner));
@@ -65,25 +65,26 @@ public class RealXzBodyObservable<T> extends Observable<T> {
                 terminated = true;
                 Throwable t = new HttpException(response);
                 try {
-                    observer.onError(t);
+                    subscriber.onError(t);
                 } catch (Throwable inner) {
                     Exceptions.throwIfFatal(inner);
                     RxJavaPlugins.onError(new CompositeException(t, inner));
                 }
             }
+
         }
 
         @Override
         public void onComplete() {
             if (!terminated) {
-                observer.onComplete();
+                subscriber.onComplete();
             }
         }
 
         @Override
         public void onError(Throwable throwable) {
             if (!terminated) {
-                observer.onError(throwable);
+                subscriber.onError(throwable);
             } else {
                 // This should never happen! onNext handles and forwards errors automatically.
                 Throwable broken = new AssertionError(
@@ -92,6 +93,9 @@ public class RealXzBodyObservable<T> extends Observable<T> {
                 broken.initCause(throwable);
                 RxJavaPlugins.onError(broken);
             }
+
         }
+
+
     }
 }
